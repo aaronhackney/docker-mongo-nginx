@@ -1,0 +1,42 @@
+version: '3'
+
+networks:    
+  app:
+    external: true
+
+services:
+  mongodb:
+    image: mongo:latest
+    env_file: ./.env
+    restart: unless-stopped
+    user: "${UID}:${GID}"
+    environment:
+      - db_root_user=$mongodb_user
+      - db_root_passwd=$mongodb_password
+    expose:
+      - "$MONGODB_LOCAL_PORT"
+    networks:
+      - app
+    volumes:
+      - /opt/local/var/log/mongodb:/var/log/mongodb:rw
+      - /opt/local/var/lib/mongodb:/var/lib/mongodb:rw
+      - /opt/local/etc/mongod.conf:/etc/mongod.conf:ro
+      - ./mongo-entrypoint:/docker-entrypoint-initdb.d:ro
+    command:
+        - '-f'
+        - '/etc/mongod.conf'
+        
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - "8080:80"
+      - "8443:443"
+      - "27020:27020"
+    networks: [app]
+    
+    depends_on:
+      - mongodb
+
