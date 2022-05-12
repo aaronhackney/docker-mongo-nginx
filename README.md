@@ -1,5 +1,16 @@
 # docker-compose for mongo db
 
+## Quickstart
+1. Create a directory for the persistent database datastore 
+```
+mkdir -p /opt/local/var/lib/mongodb
+```
+2. Get a local user to own the /opt/local/var/lib/mongodb directory and files. In my case, I used a local user called `mongodb` and found the uid and gid for that user.
+
+3. Create a file called .env and edit the variables (copy env.sample)
+
+4. `docker-compose up`
+
 ## Summary
 I wanted to created a docker-compose file that would:
 1. Create a mongo container
